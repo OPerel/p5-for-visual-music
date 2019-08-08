@@ -1,10 +1,11 @@
-let song, fft;
+let song, amp, fft;
 const prevLevels = new Array(60);
 
 function setup() {
   createCanvas(700, 400);
   song = loadSound("Damage.mp3", loaded);
-  fft = new p5.FFT(0.9, 256);
+  fft = new p5.FFT(0.9, 512);
+  amp = new p5.Amplitude(0.9);
   angleMode(DEGREES);
 }
 
@@ -32,35 +33,41 @@ function draw() {
   noFill();
 
   const spectrum = fft.analyze();
-  // console.log(spectrum)
-  // remove very high frequencies
-  // const twoThirds = Math.floor((spectrum.length / 3) * 2);
-  spectrum.splice(120);
 
-  // set width and spacing of each rect
-  const spacing = 3;
-  const w = width / (spectrum.length * spacing);
+  // get the middle of the spectrum
+  const midSpectrum = spectrum.slice(100, -100);
+
+  // filter 90 bins at regular intervals
+  const newSpectrum = [];
+  var delta = Math.floor( midSpectrum.length / 90 );
+  for (i = 0; i < midSpectrum.length; i=i+delta) {
+    newSpectrum.push(midSpectrum[i]);
+  }
+
+  const volume = amp.getLevel();
 
   translate(width / 2, height / 2);
   beginShape(QUADS);
 
     
-    // loop over all frequencies in spectrum array
-    for (let i = 0; i < 120; i++) {
-      const r = 80;
-      const x = r * cos(i * 3);
-      const y = r * sin(i * 3);
-      const h = map(spectrum[i], 0, 1, 80, 80.8);
-      const xh = h * cos(i * 3);
-      const yh = h * sin(i * 3);
+    // loop over all frequencies in newSpectrum array
+    for (let i = 0; i < 90; i++) {
+      const r = map(volume, 0, 1, 80, 130);
+      const x = r * cos(i * 4);
+      const y = r * sin(i * 4);
+      const h = map(newSpectrum[i], 0, 1, 80, 80.8);
+      const xh = h * cos(i * 4);
+      const yh = h * sin(i * 4);
 
       vertex(xh, yh);
       vertex(xh, yh);
       vertex(x, y);
       vertex(x, y);
 
-      const alpha = map(spectrum[i], 0, 256, 0, 1);
-      stroke(`rgba(${spectrum[i]}, 90, 220, ${alpha})`)
+      strokeWeight(2.2);
+
+      // const alpha = map(newSpectrum[i], 0, 256, 0, 1);
+      stroke(`rgba(${newSpectrum[i]}, 90, 220, 1)`)
     }
 
   endShape();
