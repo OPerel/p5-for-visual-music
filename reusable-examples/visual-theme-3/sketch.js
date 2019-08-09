@@ -3,7 +3,7 @@ const prevLevels = new Array(60);
 
 function setup() {
   createCanvas(900, 500);
-  song = loadSound("Damage.mp3", loaded);
+  song = loadSound("little-camels.mp3", loaded);
   fft = new p5.FFT(0.9, 512);
   amp = new p5.Amplitude();
   angleMode(DEGREES);
@@ -13,7 +13,7 @@ function loaded() {
   console.log("loaded");
   button = createButton("play");
   button.mousePressed(togglePlaying);
-  song.setVolume(0.2); // note that all amplitude mappings are between 0 - 0.2 because of this.
+  song.setVolume(0.2); 
 }
 
 // toggle song on button press
@@ -28,11 +28,11 @@ function togglePlaying() {
 }
 
 function draw() {
-  background(30, 30, 30);
+  background(10, 10, 40);
 
   // get amplitude for inner bar circle  
   const volume = amp.getLevel();
-  const volumeScale = map(volume, 0, 1, 60, 90);
+  const volumeScale = map(volume, 0, 1, 60, 130);
   
   // fft bar circle
   const spectrum = fft.analyze();
@@ -51,7 +51,7 @@ function draw() {
   }
 
   translate(width / 2, height / 2);
-    
+  
   // loop over all frequencies in newSpectrum array
   for (let i = 0; i < 90; i++) {
 
@@ -62,7 +62,7 @@ function draw() {
     const x = r * cos(i * 4);
     const y = r * sin(i * 4);
 
-    // get a scaled spectrum h value of each bin
+    // get a scaled spectrum value h of each bin
     const h = map(newSpectrum[i], 0, 1, 60, 60.8);
 
     // and get the x, y coords for h
@@ -70,22 +70,22 @@ function draw() {
     const yh = h * sin(i * 4);
 
     // offset h coords 
-    const xh1 = xh + ((y - yh) * 0.03);
-    const xh2 = xh - ((y - yh) * 0.03);
-    const yh1 = yh - ((x - xh) * 0.03);
-    const yh2 = yh + ((x - xh) * 0.03);
+    const xh1 = xh + ((y - yh) * 0.04);
+    const xh2 = xh - ((y - yh) * 0.04);
+    const yh1 = yh - ((x - xh) * 0.04);
+    const yh2 = yh + ((x - xh) * 0.04);
+    
+    //draw bins as quads
+    // stroke(`rgba(${newSpectrum[i]}, 90, 40, 1)`);
+    fill(newSpectrum[i], 90, 40);
+    quad(xh1, yh1, xh2, yh2, x, y, x, y);
 
     // draw a circle for 1 / 9 bin
     if (i % 9 === 0 & h > 60) {
-      stroke(`rgba(${newSpectrum[i]}, 90, 220, 0.3)`)
+      stroke(`rgba(${newSpectrum[i]}, 90, 40, 0.3)`)
       strokeWeight(0.6);
-      noFill();
+      fill(`rgba(${newSpectrum[i]}, 90, 40, 0.05)`);
       circle(0, 0, h * 2);
     }
-    
-    //draw bins as quads
-    stroke(`rgba(${newSpectrum[i]}, 90, 220, 1)`);
-    fill(`rgba(${newSpectrum[i]}, 90, 220, 1)`);
-    quad(xh1, yh1, xh2, yh2, x, y, x, y);  
   }
 }
