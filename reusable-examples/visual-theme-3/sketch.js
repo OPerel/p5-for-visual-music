@@ -37,25 +37,12 @@ function draw() {
   // fft bar circle
   const spectrum = fft.analyze();
 
-  // remove last 100 item of the spectrum array
-  // spectrum.splice(-100);
-
-  // get the middle of the spectrum
-  // const midSpectrum = spectrum.slice(100, -100);
-
   // filter 45 bins at regular intervals
   const newSpectrum = [];
   const delta = Math.floor( spectrum.length / 45 );
   for (i = 0; i < spectrum.length; i=i+delta) {
     newSpectrum.push(spectrum[i]);
   }
-
-  // // filter 45 bins at regular intervals
-  // const newSpectrum1 = [];
-  // const delta1 = Math.floor( spectrum.length / 45 );
-  // for (i = 0; i < spectrum.length; i = i + delta1 + 20) {
-  //   newSpectrum1.push(spectrum[i]);
-  // }
 
   translate(width / 2, height / 2);
   
@@ -97,7 +84,7 @@ function draw() {
 
   // loop over spectrum array in opposite direction
   for (let i = 0; i < 45; i++) {
-    // set circle radius at Amplitude.getLvel
+    // set circle radius at Amplitude.getLevel
     const r = volumeScale;
 
     // get x and y coords of point on the circle for each bin
@@ -105,7 +92,7 @@ function draw() {
     const y = r * sin((i + 45) * 4);
 
     // get a scaled spectrum value h of each bin
-    const h = map(newSpectrum[i], 0, 1, 60, 60.8); // newSpectrum[i] * sqrt(log(i+1))
+    const h = map(newSpectrum[i], 0, 1, 60, 60.8); 
 
     // and get the x, y coords for h
     const xh = h * cos((i + 45) * 4);
